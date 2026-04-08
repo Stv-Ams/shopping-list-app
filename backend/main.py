@@ -161,11 +161,6 @@ def _serialize_item(row: Dict[str, Any]) -> Dict[str, Any]:
 # ---------------------------------------------------------------
 #  Endpoints
 # ---------------------------------------------------------------
-@app.get("/")
-def root() -> Dict[str, str]:
-    return {"status": "ok", "service": "Shopping List API"}
-
-
 @app.get("/api/cart")
 def get_cart() -> Dict[str, Any]:
     """Devuelve todo el estado: catálogos + listas por pestaña."""
@@ -325,3 +320,10 @@ def remove_catalog(payload: CatalogEntry) -> Dict[str, Any]:
     cur.close()
     conn.close()
     return {"tab": payload.tab, "name": payload.name, "deleted": True}
+
+
+from fastapi.staticfiles import StaticFiles
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+frontend_path = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")

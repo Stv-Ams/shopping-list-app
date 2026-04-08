@@ -3,7 +3,7 @@
 //  Reemplaza localStorage por llamadas fetch() a la API REST.
 // ============================================================
 
-const API = "http://127.0.0.1:8000/api";
+const API = '';
 
 const TABS = [
   { key: "costco", label: "Costco", icon: "🏬" },
@@ -45,7 +45,7 @@ async function apiSend(method, path, body) {
 
 async function fetchState() {
   try {
-    state = await apiGet("/cart");
+    state = await apiGet("/api/cart");
   } catch (e) {
     console.error("No se pudo conectar con el backend:", e);
   }
@@ -194,7 +194,7 @@ async function addCat(i) {
   if (!cat || !cat[i]) return;
   const n = cat[i];
   if (state.lists[tab].some(l => l.name.toLowerCase() === n.toLowerCase() && !l.checked)) return;
-  await apiSend("POST", "/add", { tab, name: n, qty: 1, priority: null });
+  await apiSend("POST", "/api/add", { tab, name: n, qty: 1, priority: null });
   await fetchState(); render();
 }
 
@@ -203,34 +203,34 @@ async function addFree() {
   if (!el || !el.value.trim()) return;
   const n = el.value.trim();
   if (state.lists[tab].some(l => l.name.toLowerCase() === n.toLowerCase() && !l.checked)) return;
-  await apiSend("POST", "/add", { tab, name: n, qty: 1, priority: hasP() ? varP : null });
+  await apiSend("POST", "/api/add", { tab, name: n, qty: 1, priority: hasP() ? varP : null });
   await fetchState(); render();
 }
 
 async function addCatNew() {
   const el = document.getElementById("newcat");
   if (!el || !el.value.trim()) return;
-  await apiSend("POST", "/catalog/add", { tab, name: el.value.trim() });
+  await apiSend("POST", "/api/catalog/add", { tab, name: el.value.trim() });
   await fetchState(); render();
 }
 
 async function rmCat(i) {
   const name = state.catalog[tab][i];
-  await apiSend("DELETE", "/catalog/remove", { tab, name });
+  await apiSend("DELETE", "/api/catalog/remove", { tab, name });
   await fetchState(); render();
 }
 
 async function tog(i) {
   const item = state.lists[tab][i];
   if (!item) return;
-  await apiSend("PUT", "/item/" + item.id, { checked: !item.checked });
+  await apiSend("PUT", "/api/item/" + item.id, { checked: !item.checked });
   await fetchState(); render();
 }
 
 async function rm(i) {
   const item = state.lists[tab][i];
   if (!item) return;
-  await apiSend("DELETE", "/item/" + item.id, null);
+  await apiSend("DELETE", "/api/item/" + item.id, null);
   await fetchState(); render();
 }
 
@@ -241,17 +241,17 @@ async function setQ(i, q) {
   if (!item) return;
   const qty = isNaN(q) ? q : Number(q);
   qtyOpen = null;
-  await apiSend("PUT", "/item/" + item.id, { qty });
+  await apiSend("PUT", "/api/item/" + item.id, { qty });
   await fetchState(); render();
 }
 
 async function clrChk() {
-  await apiSend("DELETE", "/cart/" + tab + "/checked", null);
+  await apiSend("DELETE", "/api/cart/" + tab + "/checked", null);
   await fetchState(); render();
 }
 
 async function clrAll() {
-  await apiSend("DELETE", "/cart/" + tab, null);
+  await apiSend("DELETE", "/api/cart/" + tab, null);
   await fetchState(); render();
 }
 
